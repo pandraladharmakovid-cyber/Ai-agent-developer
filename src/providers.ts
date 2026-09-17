@@ -23,6 +23,7 @@ export interface GenerateOptions {
   prompt: string;
   temperature?: number;
   maxTokens?: number;
+  jsonMode?: boolean;
 }
 
 export interface GenerateResult {
@@ -235,6 +236,10 @@ async function generateGemini(
                   256,
                   MAX_OUTPUT_TOKENS,
                 ),
+
+              ...(options.jsonMode
+                ? { responseMimeType: 'application/json' }
+                : {}),
             },
           }),
 
@@ -367,6 +372,10 @@ async function generateGroq(
                 256,
                 MAX_OUTPUT_TOKENS,
               ),
+
+            ...(options.jsonMode
+              ? { response_format: { type: 'json_object' } }
+              : {}),
 
             stream: false,
           }),
@@ -501,6 +510,9 @@ async function generateOpenRouter(
                 256,
                 MAX_OUTPUT_TOKENS,
               ),
+            ...(options.jsonMode
+              ? { response_format: { type: 'json_object' } }
+              : {}),
           }),
 
           signal:

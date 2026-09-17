@@ -197,6 +197,7 @@ async function generateAI(
     }>;
     temperature?: number;
     maxTokens?: number;
+    jsonMode?: boolean;
   }
 ): Promise<NormalizedAIResponse> {
   const response =
@@ -230,6 +231,9 @@ async function generateAI(
 
       maxTokens:
         options.maxTokens,
+
+      jsonMode:
+        options.jsonMode,
     });
 
   const raw =
@@ -1119,6 +1123,9 @@ ${PLANNER_PROMPT}`,
 
         maxTokens:
           5000,
+
+        jsonMode:
+          true,
       });
 
     this.context.lastProvider =
@@ -1195,6 +1202,7 @@ ${TOOL_DECISION_PROMPT}`,
         messages: decisionMessages,
         temperature: 0.1,
         maxTokens: 2500,
+        jsonMode: true,
       });
 
     this.context.lastProvider =
@@ -1228,6 +1236,7 @@ Your previous response was invalid. Return exactly one JSON object now. Do not o
           ],
           temperature: 0.1,
           maxTokens: 2500,
+          jsonMode: true,
         });
 
       this.context.lastProvider =
