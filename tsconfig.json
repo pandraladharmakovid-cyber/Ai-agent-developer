@@ -9,8 +9,10 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", ".agent-workspace"]
+  "include": ["api/**/*.js"],
+  "exclude": ["node_modules", ".agent-workspace", "dist"]
 }
