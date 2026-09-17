@@ -1,0 +1,3191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="description"
+    content="AI Developer Agent — autonomous software engineering workspace."
+  />
+
+  <meta name="theme-color" content="#090b10" />
+
+  <title>AI Developer Agent</title>
+
+  <style>
+    :root {
+      --bg: #080a0f;
+      --bg-soft: #0c0f15;
+      --panel: #10131a;
+      --panel-2: #141821;
+      --panel-hover: #181d27;
+
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+
+      --text: #f5f7fb;
+      --text-secondary: #a2aab8;
+      --text-muted: #687181;
+
+      --accent: #8b5cf6;
+      --accent-light: #b49aff;
+      --accent-soft: rgba(139, 92, 246, 0.12);
+
+      --green: #35d39a;
+      --green-soft: rgba(53, 211, 154, 0.1);
+
+      --blue: #5aa9ff;
+      --yellow: #f4bd58;
+      --red: #f26f82;
+
+      --sidebar-width: 250px;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    button,
+    textarea,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    /* =========================================================
+       APP
+       ========================================================= */
+
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      width: 100%;
+      height: 100vh;
+      background:
+        radial-gradient(
+          circle at 75% -10%,
+          rgba(139, 92, 246, 0.1),
+          transparent 32%
+        ),
+        var(--bg);
+    }
+
+    /* =========================================================
+       SIDEBAR
+       ========================================================= */
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+
+      background: rgba(9, 11, 16, 0.96);
+      border-right: 1px solid var(--border);
+
+      backdrop-filter: blur(20px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      height: 68px;
+      padding: 0 18px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+
+      width: 35px;
+      height: 35px;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #9a72ff,
+          #6546d8
+        );
+
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+
+      box-shadow:
+        0 0 25px rgba(139, 92, 246, 0.28);
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-subtitle {
+      margin-top: 2px;
+
+      color: var(--text-muted);
+      font-size: 9px;
+      font-weight: 650;
+
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-section {
+      padding: 18px 12px 6px;
+    }
+
+    .section-label {
+      padding: 0 9px 8px;
+
+      color: var(--text-muted);
+      font-size: 9px;
+      font-weight: 750;
+
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      width: 100%;
+      padding: 10px;
+
+      border-radius: 8px;
+
+      background: transparent;
+      color: var(--text-secondary);
+
+      text-align: left;
+
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: var(--panel-hover);
+      color: var(--text);
+
+      transform: translateX(2px);
+    }
+
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+
+    .nav-icon {
+      display: grid;
+      place-items: center;
+
+      width: 20px;
+
+      color: currentColor;
+      font-size: 15px;
+    }
+
+    .nav-text {
+      flex: 1;
+
+      font-size: 12px;
+      font-weight: 550;
+    }
+
+    .nav-badge {
+      padding: 2px 6px;
+
+      border: 1px solid var(--border);
+      border-radius: 20px;
+
+      color: var(--text-muted);
+      font-size: 8px;
+      font-weight: 700;
+    }
+
+    /* =========================================================
+       PROJECTS
+       ========================================================= */
+
+    .projects {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .project {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      padding: 8px 10px;
+
+      border-radius: 8px;
+
+      color: var(--text-secondary);
+
+      cursor: pointer;
+    }
+
+    .project:hover {
+      background: var(--panel-hover);
+      color: var(--text);
+    }
+
+    .project.active {
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--text);
+    }
+
+    .project-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--green);
+      box-shadow:
+        0 0 9px rgba(53, 211, 154, 0.5);
+    }
+
+    .project-name {
+      overflow: hidden;
+
+      flex: 1;
+
+      font-size: 11px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* =========================================================
+       SIDEBAR BOTTOM
+       ========================================================= */
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 12px;
+
+      border-top: 1px solid var(--border);
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      padding: 10px;
+
+      border-radius: 9px;
+
+      background: var(--green-soft);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+
+      flex-shrink: 0;
+
+      border-radius: 50%;
+
+      background: var(--green);
+
+      box-shadow:
+        0 0 10px rgba(53, 211, 154, 0.7);
+
+      animation: statusPulse 2s infinite;
+    }
+
+    .status-text {
+      color: #baf3df;
+      font-size: 10px;
+    }
+
+    /* =========================================================
+       MAIN
+       ========================================================= */
+
+    .main {
+      display: flex;
+      flex-direction: column;
+
+      min-width: 0;
+      height: 100vh;
+    }
+
+    /* =========================================================
+       TOPBAR
+       ========================================================= */
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      height: 68px;
+      padding: 0 22px;
+
+      border-bottom: 1px solid var(--border);
+
+      background: rgba(8, 10, 15, 0.72);
+
+      backdrop-filter: blur(18px);
+    }
+
+    .workspace {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .workspace-icon {
+      display: grid;
+      place-items: center;
+
+      width: 31px;
+      height: 31px;
+
+      border: 1px solid var(--border);
+      border-radius: 8px;
+
+      background: var(--panel);
+
+      color: var(--accent-light);
+      font-size: 14px;
+    }
+
+    .workspace-name {
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .workspace-path {
+      margin-top: 2px;
+
+      color: var(--text-muted);
+      font-size: 9px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-button {
+      display: grid;
+      place-items: center;
+
+      width: 34px;
+      height: 34px;
+
+      border: 1px solid var(--border);
+      border-radius: 8px;
+
+      background: var(--panel);
+
+      color: var(--text-secondary);
+
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+    }
+
+    .icon-button:hover {
+      background: var(--panel-hover);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .online {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      margin-left: 5px;
+      padding: 7px 10px;
+
+      border: 1px solid var(--border);
+      border-radius: 8px;
+
+      color: var(--text-secondary);
+      font-size: 9px;
+    }
+
+    .online .status-dot {
+      width: 6px;
+      height: 6px;
+
+      animation: none;
+    }
+
+    /* =========================================================
+       CONTENT
+       ========================================================= */
+
+    .content {
+      flex: 1;
+      min-height: 0;
+
+      overflow-y: auto;
+
+      padding: 30px;
+    }
+
+    .content-inner {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .hero {
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+
+      margin-bottom: 12px;
+      padding: 5px 9px;
+
+      border: 1px solid rgba(139, 92, 246, 0.22);
+      border-radius: 20px;
+
+      background: var(--accent-soft);
+
+      color: var(--accent-light);
+
+      font-size: 9px;
+      font-weight: 750;
+
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow-dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--accent-light);
+
+      box-shadow:
+        0 0 8px rgba(180, 154, 255, 0.7);
+    }
+
+    .hero h1 {
+      max-width: 760px;
+
+      font-size: clamp(30px, 4vw, 45px);
+      line-height: 1.07;
+
+      letter-spacing: -0.045em;
+      font-weight: 760;
+    }
+
+    .hero h1 span {
+      background:
+        linear-gradient(
+          90deg,
+          #ffffff,
+          #b69aff,
+          #ffffff
+        );
+
+      background-size: 200% auto;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      color: transparent;
+
+      animation:
+        gradientMove 5s linear infinite;
+    }
+
+    .hero-description {
+      max-width: 690px;
+
+      margin-top: 12px;
+
+      color: var(--text-secondary);
+
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    /* =========================================================
+       TASK CARD
+       ========================================================= */
+
+    .task-card {
+      position: relative;
+
+      overflow: hidden;
+
+      border: 1px solid var(--border-strong);
+      border-radius: 15px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.065),
+          transparent 45%
+        ),
+        var(--panel);
+
+      box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.2);
+    }
+
+    .task-card::after {
+      content: "";
+
+      position: absolute;
+
+      width: 250px;
+      height: 250px;
+
+      top: -130px;
+      right: -100px;
+
+      border-radius: 50%;
+
+      background: rgba(139, 92, 246, 0.07);
+
+      filter: blur(65px);
+
+      pointer-events: none;
+    }
+
+    .task-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 14px 17px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .task-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      color: var(--text-secondary);
+
+      font-size: 10px;
+      font-weight: 750;
+
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .task-title-icon {
+      color: var(--accent-light);
+      font-size: 13px;
+    }
+
+    .task-mode {
+      color: var(--text-muted);
+      font-size: 9px;
+    }
+
+    .task-body {
+      padding: 18px;
+    }
+
+    .task-input {
+      width: 100%;
+      min-height: 120px;
+
+      resize: vertical;
+
+      border: 0;
+      outline: 0;
+
+      background: transparent;
+
+      color: var(--text);
+
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .task-input::placeholder {
+      color: #505a69;
+    }
+
+    .task-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      padding-top: 15px;
+
+      border-top: 1px solid var(--border);
+    }
+
+    .task-options {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      flex-wrap: wrap;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      min-height: 33px;
+
+      padding: 0 10px;
+
+      border: 1px solid var(--border);
+      border-radius: 8px;
+
+      background: var(--bg-soft);
+
+      color: var(--text-secondary);
+
+      font-size: 9px;
+    }
+
+    .option:hover {
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .run-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      min-width: 130px;
+      height: 38px;
+
+      padding: 0 16px;
+
+      border-radius: 9px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #8b5cf6,
+          #6848d9
+        );
+
+      color: white;
+
+      font-size: 11px;
+      font-weight: 750;
+
+      box-shadow:
+        0 9px 28px rgba(109, 77, 232, 0.25);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .run-button:hover {
+      transform: translateY(-1px);
+
+      box-shadow:
+        0 13px 34px rgba(109, 77, 232, 0.36);
+    }
+
+    .run-button:active {
+      transform: translateY(0);
+    }
+
+    /* =========================================================
+       STATUS GRID
+       ========================================================= */
+
+    .dashboard {
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1.35fr)
+        minmax(300px, 0.65fr);
+
+      gap: 15px;
+
+      margin-top: 17px;
+    }
+
+    .panel {
+      overflow: hidden;
+
+      min-width: 0;
+
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+
+      background: var(--panel);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      min-height: 47px;
+
+      padding: 0 15px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      color: var(--text-secondary);
+
+      font-size: 10px;
+      font-weight: 750;
+
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .panel-status {
+      color: var(--text-muted);
+      font-size: 9px;
+    }
+
+    /* =========================================================
+       PIPELINE
+       ========================================================= */
+
+    .pipeline {
+      padding: 16px;
+    }
+
+    .pipeline-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+      gap: 7px;
+    }
+
+    .stage {
+      min-height: 94px;
+
+      padding: 11px;
+
+      border: 1px solid var(--border);
+      border-radius: 9px;
+
+      background: var(--bg-soft);
+
+      transition:
+        border-color 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .stage:hover {
+      transform: translateY(-1px);
+    }
+
+    .stage-number {
+      color: var(--text-muted);
+
+      font-size: 8px;
+      font-weight: 750;
+    }
+
+    .stage-icon {
+      margin-top: 8px;
+
+      color: var(--text-secondary);
+
+      font-size: 16px;
+    }
+
+    .stage-name {
+      margin-top: 7px;
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .stage-state {
+      margin-top: 4px;
+
+      color: var(--text-muted);
+
+      font-size: 8px;
+    }
+
+    .stage.active {
+      border-color: rgba(139, 92, 246, 0.5);
+
+      background: var(--accent-soft);
+
+      transform: translateY(-2px);
+    }
+
+    .stage.active .stage-icon,
+    .stage.active .stage-state {
+      color: var(--accent-light);
+    }
+
+    .stage.complete {
+      border-color: rgba(53, 211, 154, 0.25);
+
+      background: var(--green-soft);
+    }
+
+    .stage.complete .stage-icon,
+    .stage.complete .stage-state {
+      color: var(--green);
+    }
+
+    /* =========================================================
+       ACTIVITY
+       ========================================================= */
+
+    .activity-list {
+      max-height: 235px;
+
+      padding: 7px 0;
+
+      overflow-y: auto;
+    }
+
+    .activity {
+      display: flex;
+      gap: 10px;
+
+      padding: 9px 15px;
+    }
+
+    .activity:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .activity-icon {
+      display: grid;
+      place-items: center;
+
+      flex-shrink: 0;
+
+      width: 23px;
+      height: 23px;
+
+      border: 1px solid var(--border);
+      border-radius: 7px;
+
+      background: var(--bg-soft);
+
+      color: var(--text-muted);
+
+      font-size: 9px;
+    }
+
+    .activity.success .activity-icon {
+      border-color: rgba(53, 211, 154, 0.2);
+
+      background: var(--green-soft);
+
+      color: var(--green);
+    }
+
+    .activity-content {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .activity-title {
+      font-size: 10px;
+      font-weight: 650;
+    }
+
+    .activity-detail {
+      margin-top: 3px;
+
+      overflow: hidden;
+
+      color: var(--text-muted);
+
+      font-size: 8px;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .activity-time {
+      color: var(--text-muted);
+
+      font-size: 8px;
+
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       TERMINAL
+       ========================================================= */
+
+    .terminal-panel {
+      margin-top: 15px;
+    }
+
+    .terminal {
+      min-height: 205px;
+      max-height: 270px;
+
+      padding: 15px;
+
+      overflow-y: auto;
+
+      background: #06080c;
+
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+      font-size: 10px;
+
+      line-height: 1.8;
+    }
+
+    .terminal-line {
+      display: flex;
+      gap: 8px;
+
+      min-height: 18px;
+    }
+
+    .terminal-prompt {
+      color: var(--accent-light);
+    }
+
+    .terminal-output {
+      color: #778192;
+    }
+
+    .terminal-success {
+      color: var(--green);
+    }
+
+    .terminal-error {
+      color: var(--red);
+    }
+
+    .terminal-info {
+      color: var(--blue);
+    }
+
+    .cursor {
+      display: inline-block;
+
+      width: 7px;
+      height: 13px;
+
+      margin-left: 2px;
+
+      background: var(--accent-light);
+
+      animation: blink 1s step-end infinite;
+    }
+
+    /* =========================================================
+       CAPABILITIES
+       ========================================================= */
+
+    .capabilities {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+      gap: 9px;
+
+      margin-top: 15px;
+
+      padding-bottom: 30px;
+    }
+
+    .capability {
+      padding: 13px;
+
+      border: 1px solid var(--border);
+      border-radius: 10px;
+
+      background: var(--panel);
+
+      transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .capability:hover {
+      border-color: var(--border-strong);
+
+      transform: translateY(-2px);
+    }
+
+    .capability-icon {
+      color: var(--accent-light);
+
+      font-size: 16px;
+    }
+
+    .capability-title {
+      margin-top: 8px;
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .capability-description {
+      margin-top: 4px;
+
+      color: var(--text-muted);
+
+      font-size: 8px;
+      line-height: 1.55;
+    }
+
+    /* =========================================================
+       SCROLLBAR
+       ========================================================= */
+
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+
+      background: #272d38;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #343b48;
+    }
+
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
+
+    @keyframes statusPulse {
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.55;
+        transform: scale(0.82);
+      }
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% center;
+      }
+
+      100% {
+        background-position: 200% center;
+      }
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 1050px) {
+      :root {
+        --sidebar-width: 215px;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .capabilities {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      html,
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        display: block;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        min-height: 100vh;
+      }
+
+      .content {
+        padding: 20px 14px;
+      }
+
+      .pipeline-grid {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+      }
+
+      .task-footer {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .run-button {
+        width: 100%;
+      }
+
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .workspace-path {
+        display: none;
+      }
+    }
+
+    @media (max-width: 470px) {
+      .pipeline-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .capabilities {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+    }
+    /* =========================================================
+       PROJECT INPUT
+       ========================================================= */
+
+    .project-input-panel {
+      margin-bottom: 17px;
+      border: 1px solid var(--border-strong);
+      border-radius: 15px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(90, 169, 255, 0.055),
+          transparent 48%
+        ),
+        var(--panel);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.16);
+      overflow: hidden;
+    }
+
+    .project-input-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 17px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-input-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .project-input-title-icon {
+      color: var(--blue);
+      font-size: 13px;
+    }
+
+    .project-source-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-muted);
+      font-size: 8px;
+      white-space: nowrap;
+    }
+
+    .project-source-status.ready {
+      border-color: rgba(53, 211, 154, 0.25);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .project-input-body {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .source-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 125px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--bg-soft);
+      transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .source-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      background: var(--panel-hover);
+    }
+
+    .source-icon {
+      font-size: 19px;
+      color: var(--accent-light);
+    }
+
+    .source-title {
+      margin-top: 9px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .source-description {
+      margin-top: 4px;
+      min-height: 28px;
+      color: var(--text-muted);
+      font-size: 8px;
+      line-height: 1.55;
+    }
+
+    .source-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 30px;
+      margin-top: 10px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--text-secondary);
+      font-size: 9px;
+      font-weight: 650;
+      transition: all 0.2s ease;
+    }
+
+    .source-button:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+      color: var(--text);
+      background: var(--accent-soft);
+    }
+
+    .source-button.primary {
+      border-color: rgba(139, 92, 246, 0.3);
+      background: var(--accent-soft);
+      color: var(--accent-light);
+    }
+
+    .source-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .hidden-file-input {
+      display: none;
+    }
+
+    .paste-card {
+      grid-column: 1 / -1;
+      display: none;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--bg-soft);
+    }
+
+    .paste-card.visible {
+      display: block;
+      animation: sourceReveal 0.2s ease;
+    }
+
+    .paste-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .paste-filename {
+      flex: 1;
+      min-width: 0;
+      height: 32px;
+      padding: 0 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 9px;
+    }
+
+    .paste-editor {
+      width: 100%;
+      min-height: 145px;
+      resize: vertical;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      background: #07090d;
+      color: var(--text);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .paste-editor:focus,
+    .paste-filename:focus,
+    .repo-input:focus {
+      border-color: rgba(139, 92, 246, 0.45);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.07);
+    }
+
+    .repo-card {
+      grid-column: 1 / -1;
+      display: none;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--bg-soft);
+    }
+
+    .repo-card.visible {
+      display: block;
+      animation: sourceReveal 0.2s ease;
+    }
+
+    .repo-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .repo-input {
+      flex: 1;
+      min-width: 0;
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 10px;
+    }
+
+    .selected-files {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-top: 11px;
+      padding: 9px 10px;
+      border: 1px solid rgba(53, 211, 154, 0.18);
+      border-radius: 8px;
+      background: var(--green-soft);
+      color: #baf3df;
+      font-size: 9px;
+    }
+
+    .selected-files.visible {
+      display: flex;
+    }
+
+    .selected-files strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .input-message {
+      display: none;
+      margin: 0 14px 14px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .input-message.visible {
+      display: block;
+    }
+
+    .input-message.info {
+      border: 1px solid rgba(90, 169, 255, 0.2);
+      background: rgba(90, 169, 255, 0.08);
+      color: #a9d4ff;
+    }
+
+    .input-message.error {
+      border: 1px solid rgba(242, 111, 130, 0.2);
+      background: rgba(242, 111, 130, 0.08);
+      color: #ffb1bd;
+    }
+
+    .input-message.success {
+      border: 1px solid rgba(53, 211, 154, 0.2);
+      background: var(--green-soft);
+      color: #baf3df;
+    }
+
+    @keyframes sourceReveal {
+      from {
+        opacity: 0;
+        transform: translateY(-3px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 850px) {
+      .project-input-body {
+        grid-template-columns: 1fr;
+      }
+
+      .paste-card,
+      .repo-card {
+        grid-column: auto;
+      }
+    }
+
+    /* =========================================================
+       READABILITY OVERRIDES
+       Keeps the compact developer UI, but makes text easier to read.
+       ========================================================= */
+
+    body {
+      font-size: 14px;
+    }
+
+    .brand-name {
+      font-size: 15px;
+    }
+
+    .brand-subtitle {
+      font-size: 10px;
+    }
+
+    .section-label {
+      font-size: 10px;
+    }
+
+    .nav-text {
+      font-size: 13px;
+    }
+
+    .nav-badge {
+      font-size: 9px;
+    }
+
+    .project-name {
+      font-size: 12px;
+    }
+
+    .status-text {
+      font-size: 11px;
+    }
+
+    .workspace-name {
+      font-size: 14px;
+    }
+
+    .workspace-path {
+      font-size: 10px;
+    }
+
+    .online {
+      font-size: 10px;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+    }
+
+    .hero-description {
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .task-title,
+    .project-input-title,
+    .panel-title {
+      font-size: 11px;
+    }
+
+    .task-mode,
+    .panel-status,
+    .project-source-status {
+      font-size: 10px;
+    }
+
+    .task-input {
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .task-input::placeholder {
+      color: #657083;
+    }
+
+    .option {
+      font-size: 11px;
+    }
+
+    .run-button {
+      font-size: 12px;
+    }
+
+    .source-title {
+      font-size: 13px;
+    }
+
+    .source-description {
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    .source-button {
+      font-size: 10px;
+    }
+
+    .paste-filename,
+    .repo-input {
+      font-size: 11px;
+    }
+
+    .paste-editor {
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .selected-files,
+    .input-message {
+      font-size: 10px;
+    }
+
+    .stage-number {
+      font-size: 9px;
+    }
+
+    .stage-name {
+      font-size: 12px;
+    }
+
+    .stage-state {
+      font-size: 10px;
+    }
+
+    .activity-title {
+      font-size: 11px;
+    }
+
+    .activity-detail,
+    .activity-time {
+      font-size: 9px;
+    }
+
+    .terminal {
+      font-size: 11px;
+      line-height: 1.85;
+    }
+
+    .capability-title {
+      font-size: 11px;
+    }
+
+    .capability-description {
+      font-size: 9px;
+      line-height: 1.65;
+    }
+
+    @media (max-width: 760px) {
+      .nav-text {
+        font-size: 13px;
+      }
+
+      .hero-description {
+        font-size: 13px;
+      }
+
+      .task-input {
+        font-size: 14px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- =======================================================
+         SIDEBAR
+         ======================================================== -->
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+
+        <div>
+          <div class="brand-name">
+            AI Developer Agent
+          </div>
+
+          <div class="brand-subtitle">
+            Level 2
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+
+        <div class="section-label">
+          Workspace
+        </div>
+
+        <nav class="nav">
+
+          <button
+            class="nav-item active"
+            type="button"
+          >
+            <span class="nav-icon">✦</span>
+            <span class="nav-text">
+              Agent
+            </span>
+
+            <span class="nav-badge">
+              AI
+            </span>
+          </button>
+
+          <button
+            class="nav-item"
+            type="button"
+          >
+            <span class="nav-icon">⌘</span>
+
+            <span class="nav-text">
+              Repositories
+            </span>
+          </button>
+
+          <button
+            class="nav-item"
+            type="button"
+          >
+            <span class="nav-icon">◇</span>
+
+            <span class="nav-text">
+              Runs
+            </span>
+          </button>
+
+          <button
+            class="nav-item"
+            type="button"
+          >
+            <span class="nav-icon">≋</span>
+
+            <span class="nav-text">
+              Activity
+            </span>
+          </button>
+
+        </nav>
+      </div>
+
+      <div class="sidebar-section">
+
+        <div class="section-label">
+          Projects
+        </div>
+
+        <div class="projects">
+
+          <div class="project active">
+            <span class="project-dot"></span>
+
+            <span class="project-name">
+              AI Developer Agent
+            </span>
+          </div>
+
+          <div class="project">
+
+            <span
+              class="project-dot"
+              style="
+                background: var(--blue);
+                box-shadow: none;
+              "
+            ></span>
+
+            <span class="project-name">
+              New Workspace
+            </span>
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+
+        <div class="section-label">
+          Tools
+        </div>
+
+        <nav class="nav">
+
+          <button
+            class="nav-item"
+            type="button"
+          >
+            <span class="nav-icon">▣</span>
+
+            <span class="nav-text">
+              Files
+            </span>
+          </button>
+
+          <button
+            class="nav-item"
+            type="button"
+          >
+            <span class="nav-icon">›_</span>
+
+            <span class="nav-text">
+              Terminal
+            </span>
+          </button>
+
+          <button
+            class="nav-item"
+            type="button"
+          >
+            <span class="nav-icon">⑂</span>
+
+            <span class="nav-text">
+              Git
+            </span>
+          </button>
+
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom">
+
+        <div class="system-status">
+
+          <span class="status-dot"></span>
+
+          <span class="status-text">
+            Agent system ready
+          </span>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+    <!-- =======================================================
+         MAIN APPLICATION
+         ======================================================== -->
+
+    <main class="main">
+
+      <!-- TOP BAR -->
+
+      <header class="topbar">
+
+        <div class="workspace">
+
+          <div class="workspace-icon">
+            ◈
+          </div>
+
+          <div>
+
+            <div class="workspace-name">
+              AI Developer Agent
+            </div>
+
+            <div class="workspace-path">
+              ~/workspace/ai-agent-project
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="top-actions">
+
+          <button
+            class="icon-button"
+            type="button"
+            title="Notifications"
+          >
+            ♢
+          </button>
+
+          <button
+            class="icon-button"
+            type="button"
+            title="Settings"
+          >
+            ⚙
+          </button>
+
+          <div class="online">
+
+            <span class="status-dot"></span>
+
+            System online
+
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- CONTENT -->
+
+      <div id="agentView" class="content">
+
+        <div class="content-inner">
+
+          <!-- HERO -->
+
+          <section class="hero">
+
+            <div class="eyebrow">
+
+              <span class="eyebrow-dot"></span>
+
+              Autonomous Software Engineering
+
+            </div>
+
+            <h1>
+
+              Give your agent a problem.
+
+              <span>
+                Let it engineer the solution.
+              </span>
+
+            </h1>
+
+            <p class="hero-description">
+              An autonomous software engineering agent
+              that can understand repositories, create plans,
+              use developer tools, execute code, research
+              documentation, run tests, recover from failures,
+              and verify its work.
+            </p>
+
+          </section>
+
+
+          <!-- PROJECT INPUT -->
+
+          <section id="filesPanel" class="project-input-panel">
+            <div class="project-input-header">
+              <div class="project-input-title">
+                <span class="project-input-title-icon">⌁</span>
+                Project Input
+              </div>
+
+              <div id="projectSourceStatus" class="project-source-status">
+                <span>○</span>
+                No project loaded
+              </div>
+            </div>
+
+            <div class="project-input-body">
+
+              <div class="source-card">
+                <div>
+                  <div class="source-icon">⇧</div>
+                  <div class="source-title">Upload Project</div>
+                  <div class="source-description">
+                    Upload a ZIP containing the complete project.
+                  </div>
+                </div>
+
+                <button
+                  id="uploadZipButton"
+                  class="source-button primary"
+                  type="button"
+                >
+                  Upload ZIP
+                </button>
+
+                <input
+                  id="zipInput"
+                  class="hidden-file-input"
+                  type="file"
+                  accept=".zip,application/zip"
+                />
+              </div>
+
+              <div class="source-card">
+                <div>
+                  <div class="source-icon">▣</div>
+                  <div class="source-title">Upload Files or Folder</div>
+                  <div class="source-description">
+                    Load individual files or preserve a complete folder tree.
+                  </div>
+                </div>
+
+                <button
+                  id="uploadFilesButton"
+                  class="source-button"
+                  type="button"
+                >
+                  Select Files
+                </button>
+
+                <input
+                  id="filesInput"
+                  class="hidden-file-input"
+                  type="file"
+                  multiple
+                />
+
+                <button
+                  id="uploadFolderButton"
+                  class="source-button"
+                  type="button"
+                >
+                  Select Folder
+                </button>
+
+                <input
+                  id="folderInput"
+                  class="hidden-file-input"
+                  type="file"
+                  multiple
+                  webkitdirectory
+                  directory
+                />
+              </div>
+
+              <div class="source-card">
+                <div>
+                  <div class="source-icon">⌘</div>
+                  <div class="source-title">Paste Code</div>
+                  <div class="source-description">
+                    Paste a file directly and give it a filename.
+                  </div>
+                </div>
+
+                <button
+                  id="pasteCodeButton"
+                  class="source-button"
+                  type="button"
+                >
+                  Paste File
+                </button>
+              </div>
+
+              <div id="pasteCard" class="paste-card">
+                <div class="paste-row">
+                  <input
+                    id="pasteFilename"
+                    class="paste-filename"
+                    type="text"
+                    value="src/index.js"
+                    placeholder="File path, e.g. src/index.js"
+                  />
+
+                  <button
+                    id="savePastedFile"
+                    class="source-button primary"
+                    type="button"
+                  >
+                    Add File
+                  </button>
+
+                  <button
+                    id="cancelPaste"
+                    class="source-button"
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                <textarea
+                  id="pasteEditor"
+                  class="paste-editor"
+                  spellcheck="false"
+                  placeholder="Paste your code here..."
+                ></textarea>
+              </div>
+
+              <div id="repoCard" class="repo-card">
+                <div class="repo-row">
+                  <input
+                    id="repoInput"
+                    class="repo-input"
+                    type="url"
+                    placeholder="https://github.com/owner/repository"
+                  />
+
+                  <button
+                    id="connectRepo"
+                    class="source-button primary"
+                    type="button"
+                  >
+                    Connect Repository
+                  </button>
+
+                  <button
+                    id="cancelRepo"
+                    class="source-button"
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              <div id="selectedFiles" class="selected-files">
+                <span>✓</span>
+                <span>
+                  <strong id="selectedFilesCount">0 files</strong>
+                  ready for the agent
+                </span>
+              </div>
+            </div>
+
+            <div id="inputMessage" class="input-message"></div>
+          </section>
+
+
+          <!-- TASK -->
+
+          <section class="task-card">
+
+            <div class="task-header">
+
+              <div class="task-title">
+
+                <span class="task-title-icon">
+                  ✦
+                </span>
+
+                New Agent Task
+
+              </div>
+
+              <div class="task-mode">
+                Autonomous mode
+              </div>
+
+            </div>
+
+            <div class="task-body">
+
+              <textarea
+                id="taskInput"
+                class="task-input"
+                spellcheck="false"
+                placeholder="Describe what you want the agent to accomplish...
+
+Example: Find the authentication bug in this repository, fix it, run the tests, and explain exactly what changed."
+              ></textarea>
+
+              <div class="task-footer">
+
+                <div class="task-options">
+
+                  <button
+                    class="option"
+                    type="button"
+                  >
+                    ✦ Gemini
+                  </button>
+
+                  <button
+                    class="option"
+                    type="button"
+                  >
+                    ◉ Auto tools
+                  </button>
+
+                  <button
+                    class="option"
+                    type="button"
+                  >
+                    ◇ Sandbox
+                  </button>
+
+                </div>
+
+                <button
+                  id="runAgent"
+                  class="run-button"
+                  type="button"
+                >
+                  <span>▶</span>
+                  <span>Run Agent</span>
+                </button>
+
+              </div>
+
+            </div>
+
+          </section>
+
+          <!-- DASHBOARD -->
+
+          <section class="dashboard">
+
+            <!-- PIPELINE -->
+
+            <div id="pipelinePanel" class="panel">
+
+              <div class="panel-header">
+
+                <div class="panel-title">
+                  <span>◎</span>
+                  Agent Pipeline
+                </div>
+
+                <div
+                  id="pipelineStatus"
+                  class="panel-status"
+                >
+                  Waiting for task
+                </div>
+
+              </div>
+
+              <div class="pipeline">
+
+                <div class="pipeline-grid">
+
+                  <div
+                    class="stage"
+                    data-stage="understand"
+                  >
+
+                    <div class="stage-number">
+                      01
+                    </div>
+
+                    <div class="stage-icon">
+                      ◌
+                    </div>
+
+                    <div class="stage-name">
+                      Understand
+                    </div>
+
+                    <div class="stage-state">
+                      Waiting
+                    </div>
+
+                  </div>
+
+                  <div
+                    class="stage"
+                    data-stage="plan"
+                  >
+
+                    <div class="stage-number">
+                      02
+                    </div>
+
+                    <div class="stage-icon">
+                      ◇
+                    </div>
+
+                    <div class="stage-name">
+                      Plan
+                    </div>
+
+                    <div class="stage-state">
+                      Waiting
+                    </div>
+
+                  </div>
+
+                  <div
+                    class="stage"
+                    data-stage="execute"
+                  >
+
+                    <div class="stage-number">
+                      03
+                    </div>
+
+                    <div class="stage-icon">
+                      ⚡
+                    </div>
+
+                    <div class="stage-name">
+                      Execute
+                    </div>
+
+                    <div class="stage-state">
+                      Waiting
+                    </div>
+
+                  </div>
+
+                  <div
+                    class="stage"
+                    data-stage="test"
+                  >
+
+                    <div class="stage-number">
+                      04
+                    </div>
+
+                    <div class="stage-icon">
+                      ✓
+                    </div>
+
+                    <div class="stage-name">
+                      Test
+                    </div>
+
+                    <div class="stage-state">
+                      Waiting
+                    </div>
+
+                  </div>
+
+                  <div
+                    class="stage"
+                    data-stage="verify"
+                  >
+
+                    <div class="stage-number">
+                      05
+                    </div>
+
+                    <div class="stage-icon">
+                      ◉
+                    </div>
+
+                    <div class="stage-name">
+                      Verify
+                    </div>
+
+                    <div class="stage-state">
+                      Waiting
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- ACTIVITY -->
+
+            <div id="activityPanel" class="panel">
+
+              <div class="panel-header">
+
+                <div class="panel-title">
+                  <span>≋</span>
+                  Live Activity
+                </div>
+
+                <div class="panel-status">
+                  realtime
+                </div>
+
+              </div>
+
+              <div id="activityList" class="activity-list">
+
+                <div class="activity">
+
+                  <div class="activity-icon">
+                    ○
+                  </div>
+
+                  <div class="activity-content">
+
+                    <div class="activity-title">
+                      Agent ready
+                    </div>
+
+                    <div class="activity-detail">
+                      Waiting for your next engineering task
+                    </div>
+
+                  </div>
+
+                  <div class="activity-time">
+                    now
+                  </div>
+
+                </div>
+
+                <div class="activity success">
+
+                  <div class="activity-icon">
+                    ✓
+                  </div>
+
+                  <div class="activity-content">
+
+                    <div class="activity-title">
+                      Workspace connected
+                    </div>
+
+                    <div class="activity-detail">
+                      Project environment available
+                    </div>
+
+                  </div>
+
+                  <div class="activity-time">
+                    ready
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+          <!-- TERMINAL -->
+
+          <section id="terminalPanel" class="panel terminal-panel">
+
+            <div class="panel-header">
+
+              <div class="panel-title">
+                <span>›_</span>
+                Agent Terminal
+              </div>
+
+              <div class="panel-status">
+                sandbox
+              </div>
+
+            </div>
+
+            <div id="terminalOutput" class="terminal">
+
+              <div class="terminal-line">
+
+                <span class="terminal-prompt">
+                  $
+                </span>
+
+                <span class="terminal-output">
+                  agent --status
+                </span>
+
+              </div>
+
+              <div class="terminal-line">
+
+                <span class="terminal-output">
+                  AI Developer Agent environment initialized
+                </span>
+
+              </div>
+
+              <div class="terminal-line">
+
+                <span class="terminal-output">
+                  Provider: Gemini
+                </span>
+
+              </div>
+
+              <div class="terminal-line">
+
+                <span class="terminal-output">
+                  Tools: files, terminal, git, research, tests
+                </span>
+
+              </div>
+
+              <div class="terminal-line">
+
+                <span class="terminal-success">
+                  ✓ Sandbox ready
+                </span>
+
+              </div>
+
+              <div class="terminal-line">
+
+                <span class="terminal-prompt">
+                  $
+                </span>
+
+                <span class="cursor"></span>
+
+              </div>
+
+            </div>
+
+          </section>
+
+          <!-- CAPABILITIES -->
+
+          <section class="capabilities">
+
+            <div class="capability">
+
+              <div class="capability-icon">
+                ◫
+              </div>
+
+              <div class="capability-title">
+                Repository Intelligence
+              </div>
+
+              <div class="capability-description">
+                Understand project structure, source code,
+                dependencies and relationships.
+              </div>
+
+            </div>
+
+            <div class="capability">
+
+              <div class="capability-icon">
+                ⚙
+              </div>
+
+              <div class="capability-title">
+                Autonomous Execution
+              </div>
+
+              <div class="capability-description">
+                Select appropriate tools and perform
+                engineering actions.
+              </div>
+
+            </div>
+
+            <div class="capability">
+
+              <div class="capability-icon">
+                ⟳
+              </div>
+
+              <div class="capability-title">
+                Error Recovery
+              </div>
+
+              <div class="capability-description">
+                Diagnose failures, apply fixes and
+                retry verification.
+              </div>
+
+            </div>
+
+            <div class="capability">
+
+              <div class="capability-icon">
+                ✓
+              </div>
+
+              <div class="capability-title">
+                Verification
+              </div>
+
+              <div class="capability-description">
+                Test, build and verify before reporting
+                a task as complete.
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+  <script>
+    (() => {
+      "use strict";
+
+      const state = {
+        sourceReady: false,
+        sourceType: null,
+        sourceName: null,
+        fileCount: 0,
+        busy: false
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      const statusEl = $("projectSourceStatus");
+      const selectedFilesEl = $("selectedFiles");
+      const selectedFilesCountEl = $("selectedFilesCount");
+      const messageEl = $("inputMessage");
+
+      function showMessage(text, type = "info") {
+        messageEl.textContent = text;
+        messageEl.className = "input-message visible " + type;
+      }
+
+      function clearMessage() {
+        messageEl.textContent = "";
+        messageEl.className = "input-message";
+      }
+
+      function setSourceReady(type, name, count = 1) {
+        state.sourceReady = true;
+        state.sourceType = type;
+        state.sourceName = name;
+        state.fileCount = count;
+
+        statusEl.className = "project-source-status ready";
+        statusEl.innerHTML = "<span>✓</span> Project ready";
+
+        selectedFilesEl.classList.add("visible");
+        selectedFilesCountEl.textContent =
+          count === 1 ? "1 file" : count + " files";
+      }
+
+      function setBusy(button, busyText) {
+        if (!button) return () => {};
+        const original = button.textContent;
+        button.disabled = true;
+        button.textContent = busyText;
+        return () => {
+          button.disabled = false;
+          button.textContent = original;
+        };
+      }
+
+      function renderAgentResult(result) {
+        const events = Array.isArray(result?.events)
+          ? result.events
+          : [];
+        const stageNames = [
+          "understand",
+          "plan",
+          "execute",
+          "test",
+          "verify"
+        ];
+        const latestByStage = new Map();
+
+        for (const event of events) {
+          if (stageNames.includes(event.stage)) {
+            latestByStage.set(event.stage, event);
+          }
+        }
+
+        $("pipelineStatus").textContent =
+          result?.status === "completed" ? "Completed" : "Failed";
+
+        for (const stage of stageNames) {
+          const element = document.querySelector(
+            '[data-stage="' + stage + '"]'
+          );
+          const event = latestByStage.get(stage);
+          if (!element || !event) continue;
+
+          element.classList.toggle(
+            "complete",
+            event.type === "stage_completed"
+          );
+          element.classList.toggle(
+            "active",
+            event.type === "stage_started"
+          );
+          element.querySelector(".stage-state").textContent =
+            event.type === "stage_completed" ? "Complete" : "Working";
+        }
+
+        const activityList = $("activityList");
+        activityList.replaceChildren();
+
+        for (const event of events.slice(-12)) {
+          const item = document.createElement("div");
+          item.className =
+            "activity" +
+            (event.type === "complete" ? " success" : "");
+
+          const icon = document.createElement("div");
+          icon.className = "activity-icon";
+          icon.textContent = event.type === "error" ? "!" : "•";
+
+          const content = document.createElement("div");
+          content.className = "activity-content";
+
+          const title = document.createElement("div");
+          title.className = "activity-title";
+          title.textContent = event.type.replaceAll("_", " ");
+
+          const detail = document.createElement("div");
+          detail.className = "activity-detail";
+          detail.textContent = event.message || "";
+
+          const time = document.createElement("div");
+          time.className = "activity-time";
+          time.textContent = event.stage || "agent";
+
+          content.append(title, detail);
+          item.append(icon, content, time);
+          activityList.append(item);
+        }
+
+        const terminal = $("terminalOutput");
+        terminal.replaceChildren();
+
+        for (const event of events) {
+          const line = document.createElement("div");
+          line.className = "terminal-line";
+
+          const output = document.createElement("span");
+          output.className =
+            event.type === "error"
+              ? "terminal-error"
+              : event.type === "complete"
+                ? "terminal-success"
+                : "terminal-output";
+          output.textContent =
+            "[" + (event.stage || "agent") + "] " +
+            (event.message || "");
+
+          line.append(output);
+          terminal.append(line);
+
+          const commandOutput =
+            event.data &&
+            typeof event.data.output === "object"
+              ? event.data.output
+              : null;
+
+          if (commandOutput) {
+            for (const [stream, value] of [
+              ["stdout", commandOutput.stdout],
+              ["stderr", commandOutput.stderr]
+            ]) {
+              if (typeof value !== "string" || !value) continue;
+
+              const outputLine = document.createElement("div");
+              outputLine.className = "terminal-line";
+
+              const streamOutput = document.createElement("span");
+              streamOutput.className =
+                stream === "stderr"
+                  ? "terminal-error"
+                  : "terminal-output";
+              streamOutput.textContent = value;
+
+              outputLine.append(streamOutput);
+              terminal.append(outputLine);
+            }
+
+            if (typeof commandOutput.exitCode === "number") {
+              const resultLine = document.createElement("div");
+              resultLine.className = "terminal-line";
+
+              const resultOutput = document.createElement("span");
+              resultOutput.className =
+                commandOutput.success
+                  ? "terminal-success"
+                  : "terminal-error";
+              resultOutput.textContent =
+                "exit code: " + commandOutput.exitCode;
+
+              resultLine.append(resultOutput);
+              terminal.append(resultLine);
+            }
+          }
+        }
+      }
+
+      async function postForm(url, formData) {
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData
+        });
+
+        let payload = null;
+        try {
+          payload = await response.json();
+        } catch {
+          payload = null;
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            payload?.error ||
+            "Server rejected the project input (" + response.status + ")."
+          );
+        }
+
+        return payload || {};
+      }
+
+      $("uploadZipButton").addEventListener("click", () => {
+        $("zipInput").click();
+      });
+
+      $("uploadFilesButton").addEventListener("click", () => {
+        $("filesInput").click();
+      });
+
+      $("uploadFolderButton").addEventListener("click", () => {
+        $("folderInput").click();
+      });
+
+      $("zipInput").addEventListener("change", async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        clearMessage();
+
+        const button = $("uploadZipButton");
+        const restore = setBusy(button, "Uploading...");
+
+        try {
+          const form = new FormData();
+          form.append("project", file, file.name);
+
+          const result = await postForm("/api/workspace/upload", form);
+
+          setSourceReady(
+            "zip",
+            result.name || file.name,
+            Number(result.fileCount) || 1
+          );
+
+          showMessage(
+            "Project uploaded successfully. The agent can now inspect the workspace.",
+            "success"
+          );
+        } catch (error) {
+          showMessage(error.message, "error");
+        } finally {
+          restore();
+          event.target.value = "";
+        }
+      });
+
+      async function uploadSelectedFiles(event, buttonId) {
+        const files = Array.from(event.target.files || []);
+        if (!files.length) return;
+
+        clearMessage();
+
+        const button = $(buttonId);
+        const restore = setBusy(button, "Uploading...");
+
+        try {
+          const form = new FormData();
+
+          for (const file of files) {
+            const relativePath =
+              file.webkitRelativePath || file.name;
+
+            form.append(
+              "files",
+              file,
+              relativePath
+            );
+          }
+
+          const result = await postForm("/api/workspace/files", form);
+
+          setSourceReady(
+            "files",
+            result.name || "Uploaded project",
+            Number(result.fileCount) || files.length
+          );
+
+          showMessage(
+            (Number(result.fileCount) || files.length) +
+            " project files are ready for the agent.",
+            "success"
+          );
+        } catch (error) {
+          showMessage(error.message, "error");
+        } finally {
+          restore();
+          event.target.value = "";
+        }
+      }
+
+      $("filesInput").addEventListener("change", (event) => {
+        uploadSelectedFiles(event, "uploadFilesButton");
+      });
+
+      $("folderInput").addEventListener("change", (event) => {
+        uploadSelectedFiles(event, "uploadFolderButton");
+      });
+
+      $("pasteCodeButton").addEventListener("click", () => {
+        $("repoCard").classList.remove("visible");
+        $("pasteCard").classList.toggle("visible");
+
+        if ($("pasteCard").classList.contains("visible")) {
+          $("pasteEditor").focus();
+        }
+      });
+
+      $("cancelPaste").addEventListener("click", () => {
+        $("pasteCard").classList.remove("visible");
+        $("pasteEditor").value = "";
+        clearMessage();
+      });
+
+      $("savePastedFile").addEventListener("click", async () => {
+        const filename = $("pasteFilename").value.trim();
+        const content = $("pasteEditor").value;
+
+        if (!filename) {
+          showMessage("Enter a file path, for example src/app.js.", "error");
+          $("pasteFilename").focus();
+          return;
+        }
+
+        if (!content.trim()) {
+          showMessage("Paste the file contents before adding the file.", "error");
+          $("pasteEditor").focus();
+          return;
+        }
+
+        const button = $("savePastedFile");
+        const restore = setBusy(button, "Adding...");
+
+        try {
+          const form = new FormData();
+          form.append("filename", filename);
+          form.append("content", content);
+          form.append(
+            "replaceWorkspace",
+            state.sourceReady ? "false" : "true"
+          );
+
+          const result = await postForm("/api/workspace/paste", form);
+
+          setSourceReady(
+            "paste",
+            result.name || filename,
+            Number(result.fileCount) || 1
+          );
+
+          $("pasteCard").classList.remove("visible");
+          $("pasteEditor").value = "";
+
+          showMessage(
+            "File added to the workspace. The agent can now use it.",
+            "success"
+          );
+        } catch (error) {
+          showMessage(error.message, "error");
+        } finally {
+          restore();
+        }
+      });
+
+      // GitHub repository connection is intentionally handled by the backend.
+      // The browser never receives or stores the GitHub token.
+      $("cancelRepo").addEventListener("click", () => {
+        $("repoCard").classList.remove("visible");
+        $("repoInput").value = "";
+        clearMessage();
+      });
+
+      $("connectRepo").addEventListener("click", async () => {
+        const url = $("repoInput").value.trim();
+
+        if (!url) {
+          showMessage("Enter a GitHub repository URL.", "error");
+          $("repoInput").focus();
+          return;
+        }
+
+          if (!/^https?:\/\/(www\.)?github\.com\/[^/]+\/[^/]+/.test(url)) {
+            showMessage("Use a valid GitHub repository URL.", "error");
+            $("repoInput").focus();
+            return;
+          }
+        const button = $("connectRepo");
+        const restore = setBusy(button, "Connecting...");
+
+        try {
+          const form = new FormData();
+          form.append("url", url);
+
+          const result = await postForm("/api/workspace/github", form);
+
+          setSourceReady(
+            "github",
+            result.name || url,
+            Number(result.fileCount) || 1
+          );
+
+          $("repoCard").classList.remove("visible");
+          showMessage(
+            "GitHub repository connected. The agent can inspect it securely on the server.",
+            "success"
+          );
+        } catch (error) {
+          showMessage(error.message, "error");
+        } finally {
+          restore();
+        }
+      });
+
+      const navigation = {
+        Agent: () => {
+          $("agentView").scrollTo({ top: 0, behavior: "smooth" });
+        },
+        Repositories: () => {
+          $("pasteCard").classList.remove("visible");
+          $("repoCard").classList.add("visible");
+          $("filesPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+          $("repoInput").focus();
+        },
+        Runs: () => {
+          $("pipelinePanel").scrollIntoView({ behavior: "smooth", block: "start" });
+        },
+        Activity: () => {
+          $("activityPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+        },
+        Files: () => {
+          $("filesPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+          $("filesInput").click();
+        },
+        Terminal: () => {
+          $("terminalPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+        },
+        Git: () => {
+          $("pipelinePanel").scrollIntoView({ behavior: "smooth", block: "start" });
+          showMessage(
+            "Git actions become available when an agent run is working with a project.",
+            "info"
+          );
+        }
+      };
+
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        const text = item.querySelector(".nav-text")?.textContent.trim();
+        const action = navigation[text];
+
+        if (!action) return;
+
+        item.addEventListener("click", () => {
+          document.querySelectorAll(".nav-item").forEach((navItem) => {
+            navItem.classList.remove("active");
+          });
+          item.classList.add("active");
+          action();
+        });
+      });
+
+      document.querySelector('[title="Notifications"]')?.addEventListener("click", () => {
+        showMessage("No new notifications.", "info");
+      });
+
+      document.querySelector('[title="Settings"]')?.addEventListener("click", () => {
+        showMessage("Settings are managed through the project environment configuration.", "info");
+      });
+
+      const runAgent = $("runAgent");
+
+      runAgent.addEventListener("click", async () => {
+        const task = $("taskInput").value.trim();
+
+        if (!task) {
+          showMessage("Describe the engineering task first.", "error");
+          $("taskInput").focus();
+          return;
+        }
+
+        if (!state.sourceReady) {
+          showMessage(
+            "Add a project first: upload a ZIP, upload files, paste a file, or connect a GitHub repository.",
+            "error"
+          );
+          return;
+        }
+
+        if (state.busy) return;
+
+        state.busy = true;
+        runAgent.disabled = true;
+        runAgent.innerHTML = "<span>◌</span><span>Starting...</span>";
+
+        try {
+          const response = await fetch("/api/agent/run", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              task,
+              sourceType: state.sourceType,
+              sourceName: state.sourceName
+            })
+          });
+
+          const result = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(
+              result?.error ||
+              "The agent could not be started (" + response.status + ")."
+            );
+          }
+
+          showMessage(
+            result.message ||
+            "Agent run started. The pipeline will inspect, plan, execute, test, and verify the project.",
+            "success"
+          );
+
+          renderAgentResult(result.result);
+        } catch (error) {
+          showMessage(error.message, "error");
+        } finally {
+          state.busy = false;
+          runAgent.disabled = false;
+          runAgent.innerHTML = "<span>▶</span><span>Run Agent</span>";
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
