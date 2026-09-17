@@ -7,7 +7,7 @@
   "start": "node src/app.js",
   "dev": "nodemon src/app.js",
   "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
-  "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('src/index.html','dist/index.html')\""
+  "build": "node scripts/build-production.js"
 }, 
   "dependencies": {
     "@types/node": "^22.20.3",
