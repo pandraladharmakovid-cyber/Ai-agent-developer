@@ -27,10 +27,18 @@ if (!process.env.AGENT_WORKSPACE) {
   );
 }
 
-require('tsx/cjs');
+const runtimeExtension = fs.existsSync(
+  path.join(__dirname, 'agent.js')
+)
+  ? '.js'
+  : '.ts';
 
-const { runAgent } = require('./agent.ts');
-const { executeTool } = require('./tools.ts');
+if (runtimeExtension === '.ts') {
+  require('tsx/cjs');
+}
+
+const { runAgent } = require(`./agent${runtimeExtension}`);
+const { executeTool } = require(`./tools${runtimeExtension}`);
 
 const app = express();
 
