@@ -4,10 +4,11 @@
   "description": "AI Developer Agent — Level 2 autonomous software engineering system",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "typecheck": "tsc --noEmit"
-  },
+  "start": "node src/app.js",
+  "dev": "nodemon src/app.js",
+  "typecheck": "tsc --noEmit",
+  "build": "echo Vercel Express runtime - no build required"
+}, 
   "dependencies": {
     "@types/node": "^22.20.3",
     "adm-zip": "^0.6.1",
