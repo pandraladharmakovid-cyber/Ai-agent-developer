@@ -431,6 +431,15 @@ RULES:
 
 - Inspect before modifying.
 - Use the smallest useful tool.
+- The "name" field MUST be exactly one of these registered tool names:
+  read_file, write_file, list_files, search_files, execute_command, git_status,
+  git_diff, git_log, git_branch, git_commit, run_tests, run_build, run_lint,
+  run_typecheck, search_repositories, get_repository, get_file, search_issues,
+  get_issue, create_branch, create_commit, create_pull_request, web_search,
+  web_fetch, stackoverflow_search, npm_search, pypi_search.
+- Never use "shell", "bash", "terminal", "cmd", or any other invented tool name.
+- For running a command in the workspace, use the exact tool name "execute_command".
+- For listing files, use the exact tool name "list_files".
 - Use the exact registered tool name "list_files" for workspace listings.
 - Never invent tool results.
 - Never claim a tool was executed.
@@ -1325,7 +1334,16 @@ Your previous response was invalid. Return exactly one JSON object now. Do not o
       const toolName =
         tool.name.trim();
 
-      if (!isToolName(toolName)) {
+      const normalizedToolName =
+        ({
+          shell: "execute_command",
+          bash: "execute_command",
+          terminal: "execute_command",
+          cmd: "execute_command",
+        } as Record<string, string>)[toolName] ||
+        toolName;
+
+      if (!isToolName(normalizedToolName)) {
         throw new Error(
           `AI requested unsupported tool "${toolName}".`
         );
@@ -1358,7 +1376,7 @@ Your previous response was invalid. Return exactly one JSON object now. Do not o
       const request:
         AgentToolRequest = {
         name:
-          toolName,
+          normalizedToolName,
 
         arguments:
           args as Record<
